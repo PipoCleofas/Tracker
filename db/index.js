@@ -39,7 +39,7 @@ function validateMarker(req, res, next) {
   
   
   app.post('/submit', validateMarker ,(req, res) => {
-    const { latitude, longitude, title, description } = req.body;
+    const { latitude, longitude, title, description } = req.body;``
     
     console.log('Received data:', { latitude, longitude, title, description });
   

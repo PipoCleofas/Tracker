@@ -2,9 +2,17 @@ import { Image, StyleSheet, Platform, Text } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { View } from 'react-native';
 import useLocation from '@/hooks/useLocation';
+import { useState } from 'react';
+
+// Define the type for the marker object
+interface MarkerType {
+  latitude: number;
+  longitude: number;
+}
 
 export default function HomeScreen() {
   const { location, errorMsg, isFetching } = useLocation();
+  const [markers, setMarkers] = useState<MarkerType[]>([]); // State to store markers with proper type
 
   const defaultRegion = {
     latitude: 15.4817, 
@@ -13,9 +21,17 @@ export default function HomeScreen() {
     longitudeDelta: 0.05,
   };
 
+  // Function to handle map press and add new marker
+  const handleMapPress = (event: any) => {
+    const { latitude, longitude } = event.nativeEvent.coordinate;
+    setMarkers((prevMarkers) => [
+      ...prevMarkers,
+      { latitude, longitude }, // Add new marker with latitude and longitude
+    ]);
+  };
 
   return (
-    <View>
+    <View style={styles.container}>
       {isFetching && <Text>Fetching location...</Text>}
       {errorMsg && <Text>{errorMsg}</Text>}
       {!isFetching && location && (
@@ -28,6 +44,7 @@ export default function HomeScreen() {
             latitudeDelta: 0.05,
             longitudeDelta: 0.05,
           }}
+          onPress={handleMapPress} // Add this to capture click events
         >
           <Marker
             coordinate={{
@@ -36,10 +53,15 @@ export default function HomeScreen() {
             }}
             title="Got you"
             description="got you"
-          >
-          
-
-          </Marker>
+          />
+          {markers.map((marker, index) => (
+            <Marker
+              key={index}
+              coordinate={marker}
+              title={`Marker ${index + 1}`}
+              description={`Latitude: ${marker.latitude}, Longitude: ${marker.longitude}`}
+            />
+          ))}
         </MapView>
       )}
     </View>
@@ -54,121 +76,6 @@ const styles = StyleSheet.create({
   },
   map: {
     width: '100%',
-    height: '100%', // Take up 80% of the screen height for the map
+    height: '100%',
   },
-  loaderContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  tabBarContainer: {
-    width: '100%',
-    height: '20%', // 20% of the screen height for the tab bar
-    backgroundColor: 'white',
-    paddingVertical: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5, // Android shadow
-  },
-  iconContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 8,
-  },
-  icon: {
-    backgroundColor: '#FFFDD0',
-    padding: 5,
-    width: 50,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    color: 'black',
-    elevation: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 8,
-  },
-  button: {
-    backgroundColor: '#AD5765',
-    padding: 10,
-    borderRadius: 10,
-    marginHorizontal: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 60,
-    shadowColor: 'transparent',
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 22,
-  },
-   modalView: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  buttonbar: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-  },
-  buttonOpen: {
-    backgroundColor: '#F194FF',
-  },
-  buttonClose: {
-    marginTop: 5,
-    backgroundColor: '#1E90FF',
-  },
-  textStyle: {
-    color: 'white',
-    textAlign: 'center',
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
-    
-    color: 'white',
-  },
-  buttonModal: {
-    flexDirection: 'column',
-  },
-  servicesContainerStyle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  }
-  
 });
-
